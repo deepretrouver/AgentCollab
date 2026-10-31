@@ -40,6 +40,7 @@ Verify: `node scripts/dependency-inventory.mjs --check`.
 | @electron/windows-sign | 1.2.2 | BSD-2-Clause | desktop, server-desktop |
 | @exodus/bytes | 1.15.1 | MIT | web |
 | @isaacs/fs-minipass | 4.0.1 | ISC | desktop, server-desktop |
+| @isaacs/nonrecursive-glob-match | 1.0.3 | BlueOak-1.0.0 | desktop, server-desktop |
 | @jridgewell/sourcemap-codec | 1.6.0 | MIT | web |
 | @malept/cross-spawn-promise | 2.0.0 | Apache-2.0 | desktop, server-desktop |
 | @malept/flatpak-bundler | 0.4.0 | MIT | desktop, server-desktop |
@@ -299,10 +300,9 @@ Verify: `node scripts/dependency-inventory.mjs --check`.
 | mimic-response | 1.0.1 | MIT | desktop, server-desktop |
 | mimic-response | 3.1.0 | MIT | desktop, server-desktop |
 | min-indent | 1.0.1 | MIT | web |
-| minimatch | 10.2.6 | BlueOak-1.0.0 | desktop, server-desktop |
+| minimatch | 11.0.2 | BlueOak-1.0.0 | desktop, server-desktop |
 | minimatch | 3.1.5 | ISC | desktop, server-desktop |
 | minimatch | 5.1.9 | ISC | desktop, server-desktop |
-| minimatch | 9.0.9 | ISC | desktop, server-desktop |
 | minimist | 1.2.8 | MIT | desktop, server-desktop |
 | minipass | 7.1.3 | BlueOak-1.0.0 | desktop, server-desktop |
 | minizlib | 3.1.0 | MIT | desktop, server-desktop |

@@ -16,6 +16,9 @@
     "electron": "^45.1.0",
     "electron-builder": "^26.0.12"
   },
+  "overrides": {
+    "minimatch@>=9": "11.0.2"
+  },
   "build": {
     "appId": "com.agentcollab.server.v1",
     "productName": "AgentCollab Server",

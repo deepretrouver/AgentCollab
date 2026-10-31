@@ -978,3 +978,27 @@ runtime confirmation must come from the subsequent CI run.
 公开源码不等于安装包已验收。此次修正 Linux 挂载格式识别，并保留 macOS
 特殊目录名行为；本机存储和诊断测试通过，仍需远程 Linux CI 确认。
 桌面打包依赖安全审计尚未解决，不发布安装包，也不关闭审计绕过问题。
+
+The follow-up run `41158549587` passed its Linux `test` job, including Go
+tests, vet, the built Hub community smoke and public-source audit. Desktop
+dependency audit jobs still fail. Linux mount runtime acceptance is now
+confirmed; the overall workflow is not green.
+
+Dependency remediation in progress: both desktop manifests constrain
+minimatch versions >=9 to 11.0.2, preserving legacy function-style callers.
+The updated Client builds on macOS arm64 and its isolated packaged smoke
+passes invitation, login, connection, clean exit and restored account/device
+connection after reopening. All 23 desktop unit tests and dependency/runtime
+notice checks pass. This is build-tool compatibility evidence, not a completed
+security exception or a new released binary: bundled native binaries still
+carry the previous source snapshot and must be rebuilt for the final release.
+
+Linux 主测试任务已通过。现代接口的依赖升级已通过本机实际打包与重新打开接入
+测试；旧版 minimatch 的安全告警仍保留，尚未批准豁免，也未发布安装包。
+
+The same updated build dependencies also produced a macOS arm64 Server that
+passed its isolated packaged acceptance: first-run configuration, healthy Hub,
+restart preserving the team, English/Chinese switch, and clean exit. A two-case
+lockfile regression test now guards both desktop dependency resolutions. See
+`minimatch-advisory-review.md` for the outstanding legacy-source review; no
+security gate has been weakened by this partial mitigation.
