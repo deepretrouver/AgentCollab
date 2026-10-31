@@ -34,12 +34,19 @@ func ParseMountOutput(output, root string) (MountInfo, error) {
 		if separator < 0 {
 			continue
 		}
-		mountPoint := filepath.Clean(prefix[separator+4:])
+		mountPath := prefix[separator+4:]
+		options := line[open+2 : len(line)-1]
+		mountType := strings.TrimSpace(strings.SplitN(options, ",", 2)[0])
+		// Linux prints "on /path type filesystem (options)"; macOS puts
+		// the filesystem first inside the parentheses.
+		if typeIndex := strings.LastIndex(mountPath, " type "); typeIndex >= 0 && (mountType == "rw" || mountType == "ro") {
+			mountType = strings.TrimSpace(mountPath[typeIndex+6:])
+			mountPath = mountPath[:typeIndex]
+		}
+		mountPoint := filepath.Clean(mountPath)
 		if !containsPath(mountPoint, root) || len(mountPoint) <= len(best.MountPoint) {
 			continue
 		}
-		options := line[open+2 : len(line)-1]
-		mountType := strings.TrimSpace(strings.SplitN(options, ",", 2)[0])
 		best = MountInfo{
 			Source:     prefix[:separator],
 			MountPoint: mountPoint,
@@ -61,5 +68,5 @@ func containsPath(parent, child string) bool {
 }
 
 func (m MountInfo) IsSMB() bool {
-	return strings.Contains(strings.ToLower(m.Type), "smb")
+	return strings.Contains(strings.ToLower(m.Type), "smb") || strings.EqualFold(m.Type, "cifs")
 }

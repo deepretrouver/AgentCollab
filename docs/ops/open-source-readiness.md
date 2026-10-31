@@ -959,3 +959,22 @@ Runner 后 version 输出 1.3.3、当前基点提交和构建时间。当前工�
 中英文快速开始补充 macOS Client 源码启动、独立 profile、连接团队和发现 Agent
 的完整路径，以及 Apple Silicon/Intel 输出位置；继续明确未验收系统边界。
 没有修改已安装应用或增加开机启动，尚未上传 GitHub。
+
+### Public source and Linux CI follow-up / 公开源码与 Linux CI 复核
+
+2026-10-31: The clean source snapshot is public at
+https://github.com/deeptrouver/AgentCollab (initial commit `509fbd11`).
+Earlier statements above about not uploading describe earlier checkpoints.
+No downloadable release has been published. Source-check run `41157853136`
+failed on Linux mount detection and a desktop build dependency advisory;
+neither failure is waived.
+
+The mount parser now distinguishes Linux's `type` field and rw/ro options
+from macOS's filesystem-first parentheses, including macOS paths containing
+` type `. Regression fixtures cover root mounts, CIFS, sibling boundaries,
+and preservation of the macOS path. Local storage/doctor tests pass; Linux
+runtime confirmation must come from the subsequent CI run.
+
+公开源码不等于安装包已验收。此次修正 Linux 挂载格式识别，并保留 macOS
+特殊目录名行为；本机存储和诊断测试通过，仍需远程 Linux CI 确认。
+桌面打包依赖安全审计尚未解决，不发布安装包，也不关闭审计绕过问题。
