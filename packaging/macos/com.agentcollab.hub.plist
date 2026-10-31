@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.agentcollab.hub</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/example/.agentcollab/bin/agentcollab-hub</string>
+    <string>serve</string>
+    <string>--config</string>
+    <string>/Users/example/AgentCollab-local/config/hub.yaml</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/example</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>StandardOutPath</key>
+  <string>/Users/example/.agentcollab/logs/hub.stdout.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/example/.agentcollab/logs/hub.stderr.log</string>
+</dict>
+</plist>

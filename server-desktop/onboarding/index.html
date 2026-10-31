@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>设置 AgentCollab Server</title>
+  <style>
+    :root{font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:#172235;background:#f5f7fb}*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:36px;background:radial-gradient(circle at 10% 0,#dfe8ff 0,transparent 38%),#f5f7fb}main{width:min(820px,100%);margin:auto}.brand{display:flex;align-items:center;gap:12px;margin-bottom:24px;font-weight:800}.mark{display:grid;width:38px;height:38px;grid-template-columns:repeat(2,7px);place-content:center;gap:5px;border-radius:12px;background:#172235}.mark i{width:7px;height:7px;border-radius:50%;background:#fff}.card{padding:32px;border:1px solid #dfe5ef;border-radius:22px;background:#fff;box-shadow:0 24px 70px #30486d16}h1{margin:0;font-size:30px;letter-spacing:-.035em}.lead{margin:10px 0 25px;color:#68778e;line-height:1.7}.grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}label{display:grid;gap:7px;color:#46566f;font-size:13px;font-weight:750}label.wide{grid-column:1/-1}input,select{width:100%;min-height:44px;padding:0 13px;border:1px solid #ced8e7;border-radius:11px;background:#fff;color:#172235;font:inherit;font-weight:500;outline:none}input:focus,select:focus{border-color:#3568ea;box-shadow:0 0 0 3px #3568ea18}input[readonly]{background:#f4f7fb;color:#617088}.owner{grid-column:1/-1;margin-top:4px;padding:18px;border:1px solid #dfe5ef;border-radius:14px;background:#f8faff}.owner h2{margin:0 0 14px;font-size:15px}.owner .grid{gap:13px}.note{margin:20px 0 0;padding:13px 15px;border-radius:12px;background:#eef3fb;color:#617088;font-size:13px;line-height:1.6}.actions{display:flex;align-items:center;gap:14px;margin-top:22px}.error{flex:1;margin:0;color:#bd3f51;font-size:13px}button{min-height:43px;padding:0 19px;border:0;border-radius:11px;background:#3568ea;color:#fff;font:inherit;font-weight:800;cursor:pointer}button:disabled{opacity:.55;cursor:wait}@media(max-width:680px){body{padding:20px}.card{padding:24px}.grid{grid-template-columns:1fr}label.wide,.owner{grid-column:auto}}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand"><span class="mark"><i></i><i></i><i></i><i></i></span>AgentCollab Server <select id="language" aria-label="Language / 语言" style="width:auto;margin-left:auto"><option value="zh-CN">简体中文</option><option value="en">English</option></select></div>
+    <section class="card">
+      <h1 data-en="Create your team Server">创建团队协作中心</h1>
+      <p class="lead" data-en="The Server stores accounts, workspaces, rooms and tasks, and provides one team address and Client downloads. Members only need the Client if they want to connect agents on their own computer.">Server 独立保存账号、工作区、群聊和任务，并向所有成员提供统一团队地址及 Client 下载。需要接入本机 Agent 的成员再安装 AgentCollab Client。</p>
+      <div class="grid">
+        <label><span data-en="Team name">协作中心名称</span><input id="name" maxlength="80" /></label>
+        <label><span data-en="Server port">服务端口</span><input id="port" type="number" min="1" max="65535" /></label>
+        <label><span data-en="Address mode">团队地址方式</span><select id="addressMode"><option value="auto" data-en="Follow the current network">自动跟随当前网络</option><option value="manual" data-en="Fixed address / internal domain">固定地址 / 内部域名</option></select></label>
+        <label><span data-en="Team URL">团队访问地址</span><input id="url" type="url" placeholder="http://agentcollab.office:8080" /></label>
+        <label class="wide"><span data-en="Server data directory">Server 数据目录</span><input id="storage" /></label>
+        <section class="owner">
+          <h2 data-en="Default Hub owner">默认 Hub Owner</h2>
+          <div class="grid">
+            <label><span data-en="Username">登录用户名</span><input value="owner" disabled /></label>
+            <label><span data-en="Display name">显示名称</span><input id="display" value="Owner" maxlength="80" /></label>
+            <label class="wide"><span data-en="Password">设置密码</span><input id="password" type="password" autocomplete="new-password" /></label>
+          </div>
+        </section>
+      </div>
+      <p class="note" id="note"></p>
+      <div class="actions"><p class="error" id="error" role="alert"></p><button id="create" type="button" data-en="Create and start Server">创建并启动 Server</button></div>
+    </section>
+  </main>
+  <script>
+    const fields={name:document.querySelector('#name'),port:document.querySelector('#port'),addressMode:document.querySelector('#addressMode'),url:document.querySelector('#url'),storage:document.querySelector('#storage'),display:document.querySelector('#display'),password:document.querySelector('#password')};
+    const button=document.querySelector('#create');const error=document.querySelector('#error');const note=document.querySelector('#note');
+    let detectedHost='';
+    const language=document.querySelector('#language');
+    try{language.value=localStorage.getItem('agentcollab.locale')==='en'?'en':'zh-CN';}catch{}
+    const translated=[...document.querySelectorAll('[data-en]')].map(element=>({element,zh:element.textContent}));
+    function syncLanguage(){document.documentElement.lang=language.value;document.title=language.value==='en'?'Set up AgentCollab Server':'设置 AgentCollab Server';for(const {element,zh} of translated)element.textContent=language.value==='en'?element.dataset.en:zh;try{localStorage.setItem('agentcollab.locale',language.value);}catch{}syncAddressMode();}
+    language.addEventListener('change',syncLanguage);
+    function syncAddressMode(){const automatic=fields.addressMode.value==='auto';fields.url.readOnly=automatic;if(automatic&&detectedHost){const next=new URL(detectedHost);next.port=fields.port.value;fields.url.value=next.toString().replace(/\/$/,'');}note.textContent=language.value==='en'?(automatic?'This setup does not automatically import legacy data. Automatic mode follows your LAN address. Share the updated address after changing networks.':'This setup does not automatically import legacy data. Fixed mode supports reserved IP addresses, internal DNS and reverse proxies.'):(automatic?'本次设置不会自动导入旧版数据。自动模式会检测当前局域网地址；电脑换网后 Server 会更新地址并提醒重新分享。':'本次设置不会自动导入旧版数据。固定模式适合路由器保留 IP、内部 DNS 或反向代理地址。');}
+    syncLanguage();
+    window.agentCollabServer.getState().then((state)=>{fields.name.value=state.hubName;fields.port.value=state.port;fields.addressMode.value=state.addressMode||'auto';fields.url.value=state.publicUrl;detectedHost=state.networkUrls?.[0]||state.publicUrl;fields.storage.value=state.storageRoot;syncAddressMode();});
+    fields.addressMode.addEventListener('change',syncAddressMode);fields.port.addEventListener('input',syncAddressMode);
+    button.addEventListener('click',async()=>{error.textContent='';button.disabled=true;try{await window.agentCollabServer.configure({hubName:fields.name.value,port:Number(fields.port.value),addressMode:fields.addressMode.value,publicUrl:fields.url.value,storageRoot:fields.storage.value,displayName:fields.display.value,password:fields.password.value});}catch(reason){error.textContent=reason?.message||(language.value==='en'?'Unable to create Server':'无法创建 Server');button.disabled=false;}});
+  </script>
+</body>
+</html>

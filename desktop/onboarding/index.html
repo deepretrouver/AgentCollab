@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>设置 AgentCollab</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, "SF Pro Display", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; background:#f5f7fb; color:#172235; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center; padding:44px; background:radial-gradient(circle at 50% -15%,#dbe6ff 0,transparent 42%),#f5f7fb; }
+    main { width:min(900px,100%); }
+    .brand { display:flex; align-items:center; gap:14px; margin-bottom:32px; font-size:20px; font-weight:800; }
+    .mark { width:42px; height:42px; display:grid; grid-template-columns:repeat(2,8px); place-content:center; gap:5px; border-radius:13px; background:#3568ea; box-shadow:0 12px 30px #3568ea33; }
+    .mark i { width:8px; height:8px; border-radius:50%; background:#fff; }
+    .card { background:#fff; border:1px solid #dfe5ef; border-radius:24px; padding:38px; box-shadow:0 24px 80px #30486d18; }
+    h1 { margin:0; font-size:34px; letter-spacing:-.04em; }
+    .lead { margin:12px 0 30px; color:#66758d; line-height:1.7; }
+    .eyebrow { margin:0 0 9px; color:#3568ea; font-size:12px; font-weight:800; letter-spacing:.08em; }
+    .join-fields { margin-top:24px; }
+    label > span { display:block; margin-bottom:9px; font-weight:750; }
+    input[type=url] { width:100%; border:1px solid #cfd8e6; border-radius:13px; padding:14px 15px; font:inherit; outline:none; background:#fff; }
+    input[type=url]:focus { border-color:#3568ea; box-shadow:0 0 0 3px #3568ea18; }
+    .note { display:flex; gap:10px; margin:24px 0 0; padding:14px 16px; border-radius:13px; background:#f0f4fa; color:#627188; font-size:14px; line-height:1.6; }
+    .actions { display:flex; justify-content:flex-end; align-items:center; gap:16px; margin-top:28px; }
+    button { border:0; border-radius:12px; padding:13px 22px; background:#3568ea; color:#fff; font:inherit; font-weight:800; cursor:pointer; }
+    button:disabled { opacity:.55; cursor:wait; }
+    .error { flex:1; margin:0; color:#bd3f51; font-size:14px; }
+    @media (max-width:700px) { body{padding:20px}.card{padding:25px}.choices{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand"><span class="mark"><i></i><i></i><i></i><i></i></span>AgentCollab <select id="language" aria-label="Language / 语言" style="margin-left:auto;padding:9px;border:1px solid #cfd8e6;border-radius:10px;background:white;font:inherit;font-size:14px"><option value="zh-CN">简体中文</option><option value="en">English</option></select></div>
+    <section class="card">
+      <p class="eyebrow">AGENTCOLLAB CLIENT</p>
+      <h1 id="title">加入团队</h1>
+      <p class="lead" id="lead">粘贴管理员发来的邀请链接。Client 会自动识别团队、进入群聊并记住可用地址。</p>
+      <div class="join-fields">
+        <label><span id="linkLabel">团队邀请链接</span><input id="hub" type="url" placeholder="粘贴 http://…/?join=… 链接" /></label>
+      </div>
+      <p class="note" id="note">也可以点击邀请页里的“在 Client 打开”。地址或端口变化时，Client 会尝试在当前局域网寻找团队；无法发现时，请向管理员索取最新地址。</p>
+      <div class="actions"><p id="error" class="error" role="alert"></p><button id="continue" type="button">连接并登录</button></div>
+    </section>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const hubInput = document.querySelector("#hub");
+    const error = document.querySelector("#error");
+    const button = document.querySelector("#continue");
+    hubInput.value = params.get("hub") || "";
+    error.textContent = params.get("error") || "";
+    const language = document.querySelector('#language');
+    try { language.value = localStorage.getItem('agentcollab.locale') === 'en' ? 'en' : 'zh-CN'; } catch {}
+    function syncLanguage() {
+      const en = language.value === 'en';
+      const configured = Boolean(params.get('configured'));
+      document.documentElement.lang = language.value;
+      document.title = en ? 'Set up AgentCollab' : '设置 AgentCollab';
+      document.querySelector('#title').textContent = configured ? (en ? 'Reconnect to your team' : '重新连接团队') : (en ? 'Join your team' : '加入团队');
+      document.querySelector('#lead').textContent = configured ? (en ? 'The Client is looking for your previous team. You can also paste its latest address or invitation link.' : 'Client 正在寻找上次连接的团队。你也可以粘贴管理员提供的最新地址或邀请链接。') : (en ? 'Paste the invitation link from your administrator. The Client will open your team sign-in page and remember its address.' : '粘贴管理员发来的邀请链接。Client 会打开团队登录页并记住可用地址。');
+      document.querySelector('#linkLabel').textContent = en ? 'Team invitation link or address' : '团队邀请链接或地址';
+      hubInput.placeholder = en ? 'Paste http://…/?join=…' : '粘贴 http://…/?join=… 链接';
+      document.querySelector('#note').textContent = en ? 'You can also select “Open in Client” on an invitation page. If the address or port changes, the Client will try to find your team on the LAN. Ask your administrator for the latest address if discovery fails.' : '也可以点击邀请页里的“在 Client 打开”。地址或端口变化时，Client 会尝试在当前局域网寻找团队；无法发现时，请向管理员索取最新地址。';
+      button.textContent = configured ? (en ? 'Reconnect now' : '立即重新连接') : (en ? 'Connect and sign in' : '连接并登录');
+      try { localStorage.setItem('agentcollab.locale', language.value); } catch {}
+    }
+    language.addEventListener('change', syncLanguage);
+    syncLanguage();
+
+    button.addEventListener("click", async () => {
+      error.textContent = "";
+      button.disabled = true;
+      try {
+        await window.agentCollabDesktop.configure({ hubUrl: hubInput.value });
+      } catch (reason) {
+        error.textContent = reason?.message || (language.value === 'en' ? 'Unable to complete setup' : '暂时无法完成设置');
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

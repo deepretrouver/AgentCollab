@@ -1,0 +1,248 @@
+name: Desktop release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "desktop-v*"
+
+permissions:
+  contents: read
+
+jobs:
+  mac:
+    strategy:
+      matrix:
+        include:
+          - runner: macos-15-intel
+            arch: x64
+            goarch: amd64
+          - runner: macos-15
+            arch: arm64
+            goarch: arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            desktop/package-lock.json
+            server-desktop/package-lock.json
+      - run: npm ci --prefix web
+      - run: make desktop-runtime
+      - run: npm ci --prefix desktop
+      - run: npm --prefix desktop run dist:mac -- --${{ matrix.arch }} --publish never
+      - run: make server-runtime
+      - name: Verify packaged Client before distributing
+        timeout-minutes: 3
+        run: |
+          app_dir="desktop/release/mac-${{ matrix.arch }}/AgentCollab.app"
+          if [ "${{ matrix.arch }}" = x64 ]; then app_dir="desktop/release/mac/AgentCollab.app"; fi
+          node scripts/smoke-packaged-client.mjs "$PWD/$app_dir/Contents/MacOS/AgentCollab" "$PWD/server-desktop/runtime/agentcollab-hub"
+      - name: Archive downloadable Client
+        run: |
+          mkdir -p client-downloads
+          app_dir="desktop/release/mac-${{ matrix.arch }}/AgentCollab.app"
+          if [ "${{ matrix.arch }}" = x64 ]; then app_dir="desktop/release/mac/AgentCollab.app"; fi
+          test -d "$app_dir"
+          ditto -c -k --sequesterRsrc --keepParent "$app_dir" "client-downloads/AgentCollab-Client-macos-${{ matrix.goarch }}.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: client-download-mac-${{ matrix.arch }}
+          if-no-files-found: error
+          path: client-downloads/*.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AgentCollab-mac-${{ matrix.arch }}
+          if-no-files-found: error
+          path: |
+            desktop/release/*.dmg
+
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            desktop/package-lock.json
+      - run: npm ci --prefix web
+      - run: npm run build --prefix web
+      - shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force internal/httpapi/webdist | Out-Null
+          Remove-Item internal/httpapi/webdist/* -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item web/dist/* internal/httpapi/webdist/ -Recurse -Force
+          New-Item -ItemType Directory -Force desktop/runtime | Out-Null
+          $env:CGO_ENABLED = "0"
+          $flags = node scripts/native-build-info.mjs
+          if ($LASTEXITCODE -ne 0) { throw "Runner build identity failed" }
+          go build -ldflags "$flags" -o desktop/runtime/agentcollab-runner.exe ./cmd/runner
+          if ($LASTEXITCODE -ne 0) { throw "Runner build failed" }
+      - run: npm ci --prefix desktop
+      - run: npm --prefix desktop run dist:win -- --x64 --publish never
+      - name: Build acceptance Hub and verify packaged Client
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          ./scripts/build-server-windows.ps1
+          $client = (Resolve-Path 'desktop/release/win-unpacked/AgentCollab.exe').Path
+          $hub = (Resolve-Path 'server-desktop/runtime/agentcollab-hub.exe').Path
+          node scripts/smoke-packaged-client.mjs $client $hub
+          if ($LASTEXITCODE -ne 0) { throw "Packaged Client acceptance failed" }
+      - name: Archive downloadable Client installer
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force client-downloads | Out-Null
+          $installers = @(Get-ChildItem desktop/release/*.exe)
+          if ($installers.Count -ne 1) { throw "Expected exactly one Client installer" }
+          Compress-Archive -Path $installers[0].FullName -DestinationPath client-downloads/AgentCollab-Client-windows-x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: client-download-windows-x64
+          if-no-files-found: error
+          path: client-downloads/*.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AgentCollab-windows-x64
+          if-no-files-found: error
+          path: desktop/release/*.exe
+
+  server:
+    needs: [mac, windows]
+    strategy:
+      matrix:
+        include:
+          - runner: macos-15-intel
+            arch: x64
+          - runner: macos-15
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            server-desktop/package-lock.json
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: client-download-*
+          merge-multiple: true
+          path: server-desktop/client-packages
+      - name: Verify all Client downloads are bundled
+        run: |
+          for package in AgentCollab-Client-macos-arm64.zip AgentCollab-Client-macos-amd64.zip AgentCollab-Client-windows-x64.zip; do
+            test -s "server-desktop/client-packages/$package"
+            unzip -tq "server-desktop/client-packages/$package"
+          done
+          mkdir -p server-desktop/runner-packages
+      - run: npm ci --prefix web
+      - run: make server-runtime
+      - run: npm ci --prefix server-desktop
+      - run: make desktop-runtime
+      - name: Isolated Client acceptance
+        run: |
+          AGENTCOLLAB_SMOKE_PROJECT=1 node scripts/check-client-desktop.cjs "$PWD/server-desktop/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron"
+          AGENTCOLLAB_SMOKE_AUTH=register node scripts/check-client-desktop.cjs "$PWD/server-desktop/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron"
+      - run: npm --prefix server-desktop run dist:mac -- --${{ matrix.arch }} --publish never
+      - name: Verify packaged Server application
+        timeout-minutes: 3
+        run: |
+          app_dir="server-desktop/release/mac-${{ matrix.arch }}/AgentCollab Server.app"
+          if [ "${{ matrix.arch }}" = x64 ]; then app_dir="server-desktop/release/mac/AgentCollab Server.app"; fi
+          node scripts/smoke-packaged-server.mjs "$PWD/$app_dir/Contents/MacOS/AgentCollab Server"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AgentCollab-server-mac-${{ matrix.arch }}
+          if-no-files-found: error
+          path: server-desktop/release/*.dmg
+
+  server-windows:
+    needs: [mac, windows]
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: client-download-*
+          merge-multiple: true
+          path: server-desktop/client-packages
+      - name: Verify Client downloads
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          foreach ($name in @('AgentCollab-Client-macos-arm64.zip', 'AgentCollab-Client-macos-amd64.zip', 'AgentCollab-Client-windows-x64.zip')) {
+            $file = Get-Item "server-desktop/client-packages/$name"
+            if ($file.Length -eq 0) { throw "Empty Client archive: $name" }
+            $zip = [IO.Compression.ZipFile]::OpenRead($file.FullName)
+            try { if ($zip.Entries.Count -eq 0) { throw "Empty Client archive: $name" } } finally { $zip.Dispose() }
+          }
+          New-Item -ItemType Directory -Force server-desktop/runner-packages | Out-Null
+      - run: npm ci --prefix web
+      - run: npm ci --prefix server-desktop
+      - name: Build and verify SQLite Server
+        shell: pwsh
+        run: |
+          node --test scripts/server-windows-package.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Windows build control-flow tests failed" }
+          ./scripts/build-server-windows.ps1
+      - name: Verify Server desktop onboarding
+        shell: pwsh
+        run: |
+          & ./server-desktop/node_modules/electron/dist/electron.exe scripts/smoke-server-desktop.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Server desktop acceptance failed" }
+      - run: npm --prefix server-desktop run dist:win -- --x64 --publish never
+      - name: Verify packaged Server application
+        timeout-minutes: 3
+        shell: pwsh
+        run: |
+          $executable = (Resolve-Path 'server-desktop/release/win-unpacked/AgentCollab Server.exe').Path
+          node scripts/smoke-packaged-server.mjs $executable
+          if ($LASTEXITCODE -ne 0) { throw "Packaged Server acceptance failed" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AgentCollab-server-windows-x64
+          if-no-files-found: error
+          path: server-desktop/release/*.exe
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [mac, windows, server, server-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          prerelease: true
+          fail_on_unmatched_files: true
+          files: artifacts/*

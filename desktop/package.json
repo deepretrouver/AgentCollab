@@ -1,0 +1,89 @@
+{
+  "name": "agentcollab-desktop",
+  "version": "1.3.3",
+  "private": true,
+  "description": "AgentCollab team client and local Agent service",
+  "main": "main.cjs",
+  "author": "AgentCollab",
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist:mac": "electron-builder --mac dmg",
+    "dist:win": "electron-builder --win nsis",
+    "dist": "electron-builder --mac dmg --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^45.1.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.agentcollab.desktop.v1",
+    "productName": "AgentCollab",
+    "artifactName": "AgentCollab-${version}-${os}-${arch}.${ext}",
+    "asar": true,
+    "afterPack": "after-pack.cjs",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.cjs",
+      "config-paths.cjs",
+      "major-version.cjs",
+      "network.cjs",
+      "preload.cjs",
+      "onboarding/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "protocols": [
+      {
+        "name": "AgentCollab team invitation",
+        "schemes": [
+          "agentcollab"
+        ]
+      }
+    ],
+    "extraResources": [
+      {
+        "from": "runtime",
+        "to": "runtime",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "mac": {
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg"
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "extendInfo": {
+        "LSUIElement": false,
+        "NSHumanReadableCopyright": "AgentCollab"
+      }
+    },
+    "dmg": {
+      "title": "安装 AgentCollab",
+      "sign": false
+    },
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AgentCollab",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}

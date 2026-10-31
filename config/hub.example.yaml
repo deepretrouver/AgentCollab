@@ -1,0 +1,9 @@
+storage_root: ./agentcollab-data
+listen_address: 127.0.0.1:8080
+hub_name: AgentCollab 本地协作
+public_url: http://127.0.0.1:8080
+runner_public_urls:
+  - http://127.0.0.1:8080
+database_path: data/agentcollab.db
+log_path: logs/hub.jsonl
+require_smb: false

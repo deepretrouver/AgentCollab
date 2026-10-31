@@ -1,0 +1,54 @@
+name: Source checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  desktop-dependencies:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [desktop, server-desktop]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Electron is shipped in the application despite being a devDependency.
+      # Audit the full tree; omit=dev would silently skip the runtime.
+      - run: npm ci --prefix ${{ matrix.package }} --ignore-scripts
+      - run: npm audit --prefix ${{ matrix.package }} --audit-level=moderate
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --prefix web
+      - run: node --test scripts/dependency-inventory.test.mjs
+      - run: node --test scripts/npm-runtime-notices.test.mjs
+      - run: node scripts/npm-runtime-notices.mjs --check
+      - run: node --test scripts/package-notices.test.cjs
+      - run: node --test scripts/audit-public-source.test.mjs
+      - run: node --test scripts/runner-installers.test.cjs
+      - run: node --test scripts/server-windows-package.test.cjs
+      - run: node --test scripts/mac-package.test.cjs
+      - run: node --test scripts/desktop-isolation.test.cjs
+      - run: node --test scripts/native-build-info.test.mjs
+      - run: node scripts/dependency-inventory.mjs --check
+      - run: npm audit --prefix web --audit-level=moderate
+      - run: npm run test:run --prefix web
+      - run: make web-build
+      - run: go test ./...
+      - run: go vet ./...
+      - run: go mod download
+      - run: node scripts/go-notices.mjs --check
+      - run: node --test desktop/*.test.cjs server-desktop/*.test.cjs
+      - run: go build -o bin/agentcollab-hub ./cmd/hub
+      - run: node scripts/smoke-community.mjs bin/agentcollab-hub
+      - run: node scripts/audit-public-source.mjs

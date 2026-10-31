@@ -1,0 +1,39 @@
+hub_url: http://127.0.0.1:8080
+local_dir: /Users/example/.agentcollab
+credentials_file: /Users/example/.agentcollab/device.token
+max_concurrent_tasks: 6
+resources:
+  - name: local-workspace
+    path: /Users/example/AgentWorkspace
+    description: "允许远程群聊任务使用的本地文件、项目和数据库"
+    access: read_write
+agents:
+  - id: local-codex
+    display_name: Codex Local
+    type: codex
+    transport: native
+    catalog_tier: native
+    command: /Applications/ChatGPT.app/Contents/Resources/codex
+    permission_mode: admin
+    args: ["exec", "--ignore-user-config", "--ignore-rules", "--disable", "plugins", "--disable", "remote_plugin", "--disable", "memories", "--json", "--dangerously-bypass-approvals-and-sandbox", "--skip-git-repo-check", "-C", "{{workdir}}", "-"]
+    prompt_stdin: true
+    output_mode: codex-jsonl
+    native_history: "保存为 Codex 原生 session，可用 codex exec resume 查看"
+    timeout_seconds: 900
+    skill_roots:
+      - /Users/example/.codex/skills
+
+  # 任意兼容 Agent Client Protocol v1 的本机 Agent 都可以使用这一层。
+  # command 必须指向已经安装的 ACP stdio Agent；Runner 不会自动下载依赖。
+  # - id: research-agent-acp
+  #   display_name: Research Agent ACP
+  #   type: research-agent
+  #   transport: acp
+  #   catalog_tier: custom
+  #   command: /Users/example/.local/bin/research-agent-acp
+  #   args: []
+  #   permission_mode: admin
+  #   acp_permission_policy: auto_allow
+  #   acp_mode: code
+  #   output_mode: text
+  #   timeout_seconds: 900

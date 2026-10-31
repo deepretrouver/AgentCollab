@@ -1,0 +1,14 @@
+{
+  "desktop/assets/icon.icns": "d4401313ae316e004e9f6444004f1f3cc7afc7d55052e191c279f007acbb3680",
+  "desktop/assets/icon.ico": "5ddaa660cbf3bde70257d788e48f3006100246e9cc2cf48abea9e35e6cb75566",
+  "desktop/assets/icon.png": "68a06f681fd06fa7708e72a89ac3b6d0b7e83395325d7b73a5f3eb0c4aab204a",
+  "server-desktop/assets/icon.icns": "8e8c6140c10736d48572bb8b4544f2818dd5b8541a94507210857a2097e56e95",
+  "server-desktop/assets/icon.ico": "4570dd2da916c57e781f317ae9fe783ca4a64ea6b03e1b499bd8d6cdb0fe2dfe",
+  "server-desktop/assets/icon.png": "735e8facdd4b5c18f814b040efcb9c0b89bb99a9ab0296ff7006e995e27c7369",
+  "docs/product/screenshots/server-en.png": "796578af7c4071018ca9999a2ba3db00a633a676419f77be7b92fce1943de75d",
+  "docs/product/screenshots/server-zh-CN.png": "1449244f9b2c0fa1c5586000cc4f7517813f42e28fca86c52c8c2b369d2d4832",
+  "docs/product/screenshots/project-office-en.png": "3ee95e8a756fffdc4b4af476abbf513f5aecc5b0ed4d6cd6389fb3355c8d85a0",
+  "docs/product/screenshots/project-detail-en.png": "bfaeb0c0a50b29a0ed14da56f3d9b0094c9897e2502ea238414ddc19c7116eb2",
+  "docs/product/screenshots/native-delivery-en.png": "523e9dd36d0cc1e4b43c5083385e9cd1132d411abeefc6fc2bc7d09094921703",
+  "docs/product/screenshots/native-project-en.png": "53a0cceae275c67a6b717d4229011955e5cd2ec73c7db1a382ae29a20263371f"
+}

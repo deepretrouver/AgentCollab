@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AgentCollab Server</title>
+  <style>
+    :root{font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:#172235;background:#f5f7fb}*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:34px;background:#f5f7fb}main{width:min(820px,100%);margin:auto}.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}.brand{display:flex;align-items:center;gap:12px;font-size:18px;font-weight:850}.mark{display:grid;width:38px;height:38px;grid-template-columns:repeat(2,7px);place-content:center;gap:5px;border-radius:12px;background:#172235}.mark i{width:7px;height:7px;border-radius:50%;background:#fff}.version{color:#8190a5;font-size:12px}.hero{padding:30px;border:1px solid #dfe5ef;border-radius:20px;background:#fff;box-shadow:0 20px 60px #30486d12}.status{display:flex;align-items:center;gap:9px;color:#216e4a;font-size:13px;font-weight:800}.dot{width:9px;height:9px;border-radius:50%;background:#36ad75;box-shadow:0 0 0 4px #36ad7518}.status.offline{color:#b54350}.status.offline .dot{background:#c85a67}.hero h1{margin:17px 0 6px;font-size:31px;letter-spacing:-.04em}.url-label{display:block;margin:13px 0 4px;color:#8190a5;font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.05em}.url{margin:0;color:#52627a;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px}.address-change{margin:14px 0 0;padding:11px 13px;border:1px solid #e5bd69;border-radius:10px;background:#fff8e7;color:#805b14;font-size:12px;line-height:1.55}.address-change[hidden]{display:none}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}button{min-height:39px;padding:0 14px;border:1px solid #d7dfeb;border-radius:10px;background:#fff;color:#34445c;font:inherit;font-size:13px;font-weight:750;cursor:pointer;transition:transform .18s ease,border-color .18s ease,background .18s ease}button:hover{border-color:#aab8cc}button:active{transform:translateY(1px)}button:disabled{cursor:wait;opacity:.58}button.primary{border-color:#3568ea;background:#3568ea;color:#fff}.feedback{min-height:19px;margin:12px 0 0;color:#216e4a;font-size:12px;font-weight:700}.feedback.error{color:#b54350}.panel{margin-top:15px;padding:22px;border:1px solid #dfe5ef;border-radius:16px;background:#fff}.panel h2{margin:0 0 8px;font-size:16px}.row{display:grid;gap:3px;margin-top:11px}.row span{color:#8190a5;font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.05em}.row strong{overflow-wrap:anywhere;color:#46566f;font-size:13px}.help{max-width:66ch;color:#68778e;font-size:13px;line-height:1.65}.advanced{margin-top:15px;border:1px solid #dfe5ef;border-radius:16px;background:#fff}.advanced summary{padding:17px 20px;color:#52627a;font-size:13px;font-weight:760;cursor:pointer}.advanced-body{padding:0 20px 22px;border-top:1px solid #edf1f6}.advanced .actions{margin-top:16px}@media(max-width:700px){body{padding:20px}.hero{padding:23px}}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="top"><div class="brand"><span class="mark"><i></i><i></i><i></i><i></i></span>AgentCollab Server</div><span class="version" id="version"></span></div>
+    <section class="hero">
+      <div class="status" id="status"><span class="dot"></span><span id="statusText">正在检查</span></div>
+      <h1 id="name">AgentCollab</h1><span class="url-label" id="urlLabel">团队地址</span><p class="url" id="url"></p>
+      <p class="address-change" id="addressChange" hidden></p>
+      <div class="actions"><button class="primary" id="openClient">进入团队</button><button id="copyUrl">复制团队入口</button></div>
+      <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+    </section>
+    <section class="panel"><h2>日常只需保持 Server 运行</h2><p class="help">进入团队后，在目标群聊邀请协作者并发送一个链接。成员可以直接用浏览器参与讨论；仅在接入本机 Agent 时需要安装 Client，不需要安装 Server。关闭本窗口后 Server 会继续在后台运行。</p></section>
+    <details class="advanced"><summary>高级管理与连接诊断</summary><div class="advanced-body"><div class="row"><span>本机管理地址</span><strong id="localUrl"></strong></div><div class="row"><span>当前可用入口</span><strong id="networkUrls"></strong></div><div class="row"><span>数据目录</span><strong id="storage"></strong></div><div class="row"><span>监听端口</span><strong id="port"></strong></div><div class="row"><span>最近健康检查</span><strong id="lastHealth"></strong></div><div class="actions"><button id="openAdmin">账号与权限</button><button id="downloads">客户端下载</button><button id="openHub">网页版备用</button><button id="restart">重新启动</button><button id="openData">数据目录</button><button id="openLogs">运行日志</button><button id="settings">Server 设置</button><button id="quit">退出并停止 Server</button></div></div></details>
+  </main>
+  <script src="i18n.js"></script>
+  <script>
+    const $=(id)=>document.getElementById(id);let current;
+    const {t}=window.dashboardLocale;
+    window.addEventListener('dashboard-language-change',()=>{if(current)render(current);feedback('');});
+    function render(state){current=state;$('version').textContent=`Server ${state.version}`;$('name').textContent=state.hubName;$('url').textContent=state.publicUrl;$('urlLabel').textContent=t(state.addressMode==='auto'?'团队入口 · 自动适应当前网络':'团队入口 · 固定');$('localUrl').textContent=state.localUrl;$('networkUrls').textContent=(state.networkUrls||[]).join(' · ')||t('正在检测');$('storage').textContent=state.storageRoot;$('port').textContent=state.port;$('lastHealth').textContent=state.lastHealthyAt?new Date(state.lastHealthyAt).toLocaleString(window.dashboardLocale.locale):t('等待首次检查');$('status').classList.toggle('offline',!state.running);$('statusText').textContent=t(state.running?'Server 正常运行':'Server 正在自动恢复');const changed=Boolean(state.previousPublicUrl);$('addressChange').hidden=!changed;$('addressChange').textContent=changed?(window.dashboardLocale.locale==='en'?`Address changed: ${state.previousPublicUrl} → ${state.publicUrl}. Clients will try LAN discovery. Use the current address for new invitations.`:`网络或端口已变化：${state.previousPublicUrl} → ${state.publicUrl}。Client 会尝试局域网发现。新邀请请使用当前地址。`):'';}
+    function feedback(message,error=false){$('feedback').textContent=t(message);$('feedback').classList.toggle('error',error);}
+    async function run(button,operation,success){button.disabled=true;feedback('正在处理…');try{const result=await operation();feedback(typeof success==='function'?success(result):success);return result;}catch(error){feedback(error?.message||'操作失败，请打开运行日志查看原因',true);}finally{button.disabled=false;}}
+    window.agentCollabServer.getState().then(render).catch((error)=>feedback(error?.message||'无法读取 Server 状态',true));window.agentCollabServer.onStatus(render);
+    $('openClient').onclick=()=>run($('openClient'),()=>window.agentCollabServer.openClient(),'已打开 AgentCollab Client');
+    $('openHub').onclick=()=>run($('openHub'),()=>window.agentCollabServer.openHub(),'已在浏览器打开网页版备用入口');
+    $('copyUrl').onclick=()=>run($('copyUrl'),()=>window.agentCollabServer.copyTeamURL(),(url)=>`${t('团队地址已复制：')}${url}`);
+    $('openAdmin').onclick=()=>run($('openAdmin'),()=>window.agentCollabServer.openAdmin(),'已打开账号与权限页面');
+    $('downloads').onclick=()=>run($('downloads'),()=>window.agentCollabServer.openDownloads(),'已打开客户端下载页面');
+    $('openData').onclick=()=>run($('openData'),()=>window.agentCollabServer.openData(),'已打开数据目录');
+    $('openLogs').onclick=()=>run($('openLogs'),()=>window.agentCollabServer.openLogs(),'已打开运行日志');
+    $('settings').onclick=()=>run($('settings'),()=>window.agentCollabServer.openSettings(),'已打开 Server 设置');
+    $('restart').onclick=()=>run($('restart'),async()=>render(await window.agentCollabServer.restart()),'Server 已重新启动');
+    $('quit').onclick=async()=>{$('quit').disabled=true;feedback('正在停止 Server…');try{await window.agentCollabServer.quit();}catch(error){feedback(error?.message||'无法停止 Server',true);$('quit').disabled=false;}}
+  </script>
+</body>
+</html>

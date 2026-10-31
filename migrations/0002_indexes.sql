@@ -1,0 +1,15 @@
+CREATE INDEX idx_sessions_user_expires ON sessions(user_id, expires_at);
+CREATE INDEX idx_workspace_members_user ON workspace_members(user_id, workspace_id);
+CREATE INDEX idx_rooms_workspace ON rooms(workspace_id, created_at);
+CREATE INDEX idx_messages_room_sequence ON messages(room_id, sequence);
+CREATE INDEX idx_devices_workspace_owner ON devices(workspace_id, owner_user_id);
+CREATE INDEX idx_agents_workspace_status ON agents(workspace_id, status);
+CREATE INDEX idx_agents_owner ON agents(owner_user_id, workspace_id);
+CREATE INDEX idx_invites_workspace_expires ON invites(workspace_id, expires_at);
+CREATE INDEX idx_tasks_room_created ON tasks(room_id, created_at);
+CREATE INDEX idx_tasks_target_state ON tasks(target_agent_id, state);
+CREATE INDEX idx_tasks_parent ON tasks(parent_task_id);
+CREATE INDEX idx_task_attempts_task ON task_attempts(task_id, attempt_no);
+CREATE INDEX idx_task_events_task_sequence ON task_events(task_id, sequence);
+CREATE INDEX idx_artifacts_task_attempt ON artifacts(task_id, attempt_no);
+CREATE INDEX idx_audit_workspace_time ON audit_events(workspace_id, occurred_at);

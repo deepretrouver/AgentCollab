@@ -1,0 +1,57 @@
+.DS_Store
+
+# Build output and caches
+/bin/
+/build/
+/dist/
+/releases/
+/web/node_modules/
+/web/dist/
+/web/*.tsbuildinfo
+/desktop/node_modules/
+/desktop/runtime/
+/desktop/runtime-*/
+/server-desktop/runtime-*/
+/desktop/release/
+/desktop/release-*/
+/server-desktop/node_modules/
+/server-desktop/runtime/
+/server-desktop/release/
+/server-desktop/release-*/
+/server-desktop/client-packages/
+/server-desktop/runner-packages/
+*.test
+*.out
+coverage.*
+
+# Local configuration and credentials
+/config/hub.yaml
+/config/runner.yaml
+/config/agentcollab-data/
+.env
+.env.*
+!.env.example
+*.token
+*.secret
+*.key
+
+# Runtime state; keep directory placeholders under version control
+/data/*
+!/data/.gitkeep
+/shared/*
+!/shared/.gitkeep
+/inbox/*
+!/inbox/.gitkeep
+/artifacts/*
+!/artifacts/.gitkeep
+/task-files/*
+!/task-files/.gitkeep
+/logs/*
+!/logs/.gitkeep
+/backups/*
+!/backups/.gitkeep
+
+# Temporary files
+*.tmp
+*.partial
+*.lock

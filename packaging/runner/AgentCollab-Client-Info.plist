@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDisplayName</key>
+  <string>AgentCollab Client</string>
+  <key>CFBundleExecutable</key>
+  <string>AgentCollab Client</string>
+  <key>CFBundleIdentifier</key>
+  <string>local.agentcollab.client</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundleName</key>
+  <string>AgentCollab Client</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleShortVersionString</key>
+  <string>__CLIENT_VERSION__</string>
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleURLName</key>
+      <string>AgentCollab Client Control</string>
+      <key>CFBundleURLSchemes</key>
+      <array><string>agentcollab</string></array>
+    </dict>
+  </array>
+  <key>LSUIElement</key>
+  <true/>
+</dict>
+</plist>

@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "revision": "2026-10-30.1",
+  "adapters": [
+    {
+      "type": "hermes",
+      "display_name": "Hermes Local",
+      "transport": "native",
+      "catalog_tier": "native",
+      "launchers": [{"commands": ["hermes"]}],
+      "args": ["--cli", "--yolo", "-z", "{{prompt}}"],
+      "output_mode": "text",
+      "permission_mode": "admin",
+      "timeout_seconds": 900,
+      "native_history": "Hermes CLI 原生执行记录",
+      "skill_roots": [{"path": "{home}/.hermes/skills", "source": "Hermes 专属"}]
+    },
+    {
+      "type": "codex",
+      "display_name": "Codex Local",
+      "transport": "native",
+      "catalog_tier": "native",
+      "launchers": [{"commands": ["codex"]}],
+      "args": ["exec", "--ignore-rules", "--disable", "plugins", "--disable", "remote_plugin", "--disable", "memories", "--json", "--dangerously-bypass-approvals-and-sandbox", "--skip-git-repo-check", "-C", "{{workdir}}", "-"],
+      "resume_args": ["exec", "resume", "--ignore-rules", "--disable", "plugins", "--disable", "remote_plugin", "--disable", "memories", "--json", "--dangerously-bypass-approvals-and-sandbox", "--skip-git-repo-check", "{{session_id}}", "-"],
+      "output_mode": "codex-jsonl",
+      "permission_mode": "admin",
+      "timeout_seconds": 900,
+      "native_history": "保存为 Codex 原生 session，可用 codex exec resume 查看",
+      "skill_roots": [{"path": "{home}/.codex/skills", "source": "Codex 专属"}, {"path": "{home}/.agents/skills", "source": "通用本机"}]
+    },
+    {
+      "type": "pi",
+      "display_name": "Pi Local",
+      "transport": "native",
+      "catalog_tier": "native",
+      "launchers": [
+        {"commands": ["pi"]},
+        {"command_paths": ["{home}/.hermes/node/bin/node"], "entrypoint_path": "{home}/.hermes/node/lib/node_modules/@earendil-works/pi-coding-agent/dist/cli.js"}
+      ],
+      "args": ["--print", "--mode", "json", "--approve", "--name", "AgentCollab {{task_id}}", "{{prompt}}"],
+      "resume_args": ["--print", "--mode", "json", "--approve", "--fork", "{{session_id}}", "{{prompt}}"],
+      "version_args": ["--version"],
+      "output_mode": "pi-jsonl",
+      "permission_mode": "admin",
+      "timeout_seconds": 900,
+      "native_history": "真实 Pi CLI；保存为 Pi 原生 session，可用 pi --resume 或 pi --session 查看",
+      "skill_roots": [{"path": "{home}/.pi/agent/skills", "source": "Pi 专属"}, {"path": "{home}/.agents/skills", "source": "通用本机"}]
+    },
+    {
+      "type": "workbuddy",
+      "display_name": "WorkBuddy Local",
+      "transport": "native",
+      "catalog_tier": "native",
+      "launchers": [
+        {"commands": ["workbuddy", "codebuddy"]},
+        {"os": ["darwin"], "commands": ["node"], "command_paths": ["/opt/homebrew/bin/node", "/usr/local/bin/node"], "entrypoint_path": "/Applications/WorkBuddy.app/Contents/Resources/app.asar.unpacked/cli/bin/codebuddy"}
+      ],
+      "args": ["-p", "--output-format", "json", "--model", "auto", "--dangerously-skip-permissions", "{{prompt}}"],
+      "version_args": ["--version"],
+      "output_mode": "json-result",
+      "permission_mode": "admin",
+      "timeout_seconds": 900,
+      "native_history": "真实 WorkBuddy/CodeBuddy CLI；桌面端历史是否同步由 WorkBuddy 自身决定",
+      "skill_roots": [{"path": "{home}/.codebuddy/skills", "source": "WorkBuddy 专属"}, {"path": "{home}/.agents/skills", "source": "通用本机"}]
+    },
+    {
+      "type": "claude-code",
+      "display_name": "Claude Code Local",
+      "transport": "native",
+      "catalog_tier": "native",
+      "launchers": [{"commands": ["claude"]}],
+      "args": ["-p", "--output-format", "json", "--dangerously-skip-permissions", "--name", "AgentCollab {{task_id}}", "{{prompt}}"],
+      "resume_args": ["-p", "--output-format", "json", "--dangerously-skip-permissions", "--resume", "{{session_id}}", "{{prompt}}"],
+      "output_mode": "json-result",
+      "permission_mode": "admin",
+      "timeout_seconds": 900,
+      "native_history": "保存为 Claude Code 原生 session，可用 claude --resume 查看",
+      "skill_roots": [{"path": "{home}/.claude/skills", "source": "Claude Code 专属"}, {"path": "{home}/.agents/skills", "source": "通用本机"}]
+    },
+    {
+      "type": "opencode",
+      "display_name": "OpenCode Local",
+      "transport": "native",
+      "catalog_tier": "native",
+      "launchers": [{"commands": ["opencode"]}],
+      "args": ["run", "--format", "json", "--auto", "--title", "AgentCollab {{task_id}}", "--dir", "{{workdir}}", "{{prompt}}"],
+      "resume_args": ["run", "--format", "json", "--auto", "--session", "{{session_id}}", "--dir", "{{workdir}}", "{{prompt}}"],
+      "output_mode": "json-result",
+      "permission_mode": "admin",
+      "timeout_seconds": 900,
+      "native_history": "保存为 OpenCode 原生 session，可用 opencode session 查看",
+      "skill_roots": [{"path": "{home}/.config/opencode/skills", "source": "OpenCode 专属"}, {"path": "{home}/.agents/skills", "source": "通用本机"}]
+    },
+    {
+      "type": "openclaw",
+      "display_name": "OpenClaw Local",
+      "transport": "native",
+      "catalog_tier": "native",
+      "launchers": [{"commands": ["openclaw"]}],
+      "args": ["agent", "--agent", "main", "--message", "{{prompt}}", "--json", "--timeout", "60"],
+      "output_mode": "json-result",
+      "permission_mode": "admin",
+      "timeout_seconds": 900,
+      "native_history": "保存到 OpenClaw Gateway 会话，可在 OpenClaw sessions 中核对",
+      "skill_roots": [{"path": "{home}/.openclaw/skills", "source": "OpenClaw 专属"}, {"path": "{home}/.agents/skills", "source": "通用本机"}]
+    },
+    {
+      "type": "codex-acp",
+      "display_name": "Codex ACP",
+      "transport": "acp",
+      "catalog_tier": "preset",
+      "launchers": [{"commands": ["codex-acp"]}],
+      "output_mode": "text",
+      "permission_mode": "admin",
+      "acp_permission_policy": "auto_allow",
+      "timeout_seconds": 900,
+      "hide_if_unavailable": true,
+      "native_history": "通过 Agent Client Protocol v1 执行；会话 ID 由原生 ACP Agent 管理",
+      "skill_roots": [{"path": "{home}/.codex/skills", "source": "Codex 专属"}, {"path": "{home}/.agents/skills", "source": "通用本机"}]
+    },
+    {
+      "type": "claude-code-acp",
+      "display_name": "Claude Code ACP",
+      "transport": "acp",
+      "catalog_tier": "preset",
+      "launchers": [{"commands": ["claude-agent-acp", "claude-code-acp"]}],
+      "output_mode": "text",
+      "permission_mode": "admin",
+      "acp_permission_policy": "auto_allow",
+      "timeout_seconds": 900,
+      "hide_if_unavailable": true,
+      "native_history": "通过 Agent Client Protocol v1 执行；会话 ID 由原生 ACP Agent 管理",
+      "skill_roots": [{"path": "{home}/.claude/skills", "source": "Claude Code 专属"}, {"path": "{home}/.agents/skills", "source": "通用本机"}]
+    }
+  ]
+}
