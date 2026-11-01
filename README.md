@@ -2,7 +2,11 @@
 
 ## 68 秒真实演示
 
-[观看 / 下载演示视频（MP4）](docs/product/videos/agentcollab-real-demo.mp4)
+![AgentCollab 真实协作动态演示](docs/product/videos/agentcollab-preview.gif)
+
+首页动图为约 23 秒、3 倍速预览，无需跳转。不是响应速度测试。
+
+[下载完整 68 秒视频（MP4）](https://github.com/deepretrouver/AgentCollab/raw/refs/heads/main/docs/product/videos/agentcollab-real-demo.mp4)
 
 中文界面，静音技术初剪：在隔离的单机环境中，自动化提交真实任务，展示 OpenCode、Hermes 回群及上下文追问。采样回放节奏经过调整，不代表响应速度；确认任务不调用工具或读取文件，执行凭证未展开。不是跨机、完整技能或正式安装包验收。[演示说明](docs/product/videos/README.md)
 
