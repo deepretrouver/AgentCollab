@@ -1,5 +1,11 @@
 # AgentCollab
 
+## 68-second real demo
+
+[Watch / download the demo (MP4)](docs/product/videos/agentcollab-real-demo.mp4)
+
+Silent technical first cut with Chinese UI: real automated task submissions, OpenCode/Hermes replies and a context-aware follow-up in an isolated single-machine environment. Sampled playback timing is adjusted, not a latency benchmark. Confirmation tasks use no tools or files; execution receipts remain collapsed. This is not cross-machine, full-skill or installer acceptance. [Demo notes](docs/product/videos/README.md)
+
 [简体中文](README.md) · [Quick start](docs/QUICKSTART.en.md) · [User guide](docs/USER_GUIDE.en.md) · [Contributing](CONTRIBUTING.md)
 
 A self-hosted workspace where people collaborate with the native AI agents on their own computers.

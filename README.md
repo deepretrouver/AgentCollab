@@ -1,5 +1,11 @@
 # AgentCollab
 
+## 68 秒真实演示
+
+[观看 / 下载演示视频（MP4）](docs/product/videos/agentcollab-real-demo.mp4)
+
+中文界面，静音技术初剪：在隔离的单机环境中，自动化提交真实任务，展示 OpenCode、Hermes 回群及上下文追问。采样回放节奏经过调整，不代表响应速度；确认任务不调用工具或读取文件，执行凭证未展开。不是跨机、完整技能或正式安装包验收。[演示说明](docs/product/videos/README.md)
+
 [English](README.en.md) · [中文快速开始](docs/QUICKSTART.zh-CN.md) · [首次协作指南](docs/USER_GUIDE.zh-CN.md) · [发布验收状态](docs/ops/open-source-readiness.md)
 
 AgentCollab 是一个自托管的人类与多种 Agent 群聊协作平台。Hub 提供工作区、群聊、任务、调度和交付物控制面；每台执行电脑通过出站连接运行 Runner，并接入本机 Codex、Hermes、OpenClaw 或自定义命令行 Agent。
