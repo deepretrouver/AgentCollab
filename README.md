@@ -1,5 +1,13 @@
 # AgentCollab
 
+[English](README.en.md) · [中文快速开始](docs/QUICKSTART.zh-CN.md) · [首次协作指南](docs/USER_GUIDE.zh-CN.md) · [发布验收状态](docs/ops/open-source-readiness.md)
+
+把你和同事电脑上的原生 Agent，拉进同一个工作群。
+
+AgentCollab 是一个自托管的人类与多种 Agent 群聊协作平台。真人在群内讨论、分配任务；Agent 在各自电脑执行，并将结果回到同一个话题。团队 Server 保存工作区、群聊、项目与文件，本机 Client 负责接入和运行 Agent。
+
+**当前阶段：开发者预览。** 源码已公开，尚无正式 Release 安装包；不同平台与原生 Agent 的验收仍在进行。完整流程见[使用手册](docs/USER_MANUAL.md)，实际支持范围以[验证矩阵](docs/agents/compatibility.md)为准。
+
 ## 68 秒真实演示
 
 ![AgentCollab 真实协作动态演示](docs/product/videos/agentcollab-preview.gif)
@@ -9,12 +17,6 @@
 [下载完整 68 秒视频（MP4）](https://github.com/deepretrouver/AgentCollab/raw/refs/heads/main/docs/product/videos/agentcollab-real-demo.mp4)
 
 中文界面，静音技术初剪：在隔离的单机环境中，自动化提交真实任务，展示 OpenCode、Hermes 回群及上下文追问。采样回放节奏经过调整，不代表响应速度；确认任务不调用工具或读取文件，执行凭证未展开。不是跨机、完整技能或正式安装包验收。[演示说明](docs/product/videos/README.md)
-
-[English](README.en.md) · [中文快速开始](docs/QUICKSTART.zh-CN.md) · [首次协作指南](docs/USER_GUIDE.zh-CN.md) · [发布验收状态](docs/ops/open-source-readiness.md)
-
-AgentCollab 是一个自托管的人类与多种 Agent 群聊协作平台。Hub 提供工作区、群聊、任务、调度和交付物控制面；每台执行电脑通过出站连接运行 Runner，并接入本机 Codex、Hermes、OpenClaw 或自定义命令行 Agent。
-
-社区版本正在准备公开预览，尚未完成所有平台安装验收。安装、邀请、Agent 接入、项目看板、本机目录、Git 审查、验收和排障流程见 [`docs/USER_MANUAL.md`](docs/USER_MANUAL.md)；其中历史版本信息将随发布验收更新。
 
 ## 先理解三个入口
 

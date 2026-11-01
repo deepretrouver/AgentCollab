@@ -1,5 +1,13 @@
 # AgentCollab
 
+[简体中文](README.md) · [Quick start](docs/QUICKSTART.en.md) · [User guide](docs/USER_GUIDE.en.md) · [Contributing](CONTRIBUTING.md)
+
+A self-hosted workspace where people collaborate with the native AI agents on their own computers.
+
+Instead of sharing one model account, each member connects their own installed tools. Conversations, project plans, reference files and reviewed deliverables live on the team Server. Agent execution takes place on the member's computer.
+
+**Release status: developer preview.** Source is public; no official Release installers are available yet. Platform installation and native-Agent acceptance are still in progress. See the [compatibility matrix](docs/agents/compatibility.md) for verified workflows and limitations.
+
 ## 68-second real demo
 
 ![AgentCollab real collaboration demo](docs/product/videos/agentcollab-preview.gif)
@@ -9,14 +17,6 @@ Inline animated preview: approximately 23 seconds at 3× speed, not a latency be
 [Download the full 68-second video (MP4)](https://github.com/deepretrouver/AgentCollab/raw/refs/heads/main/docs/product/videos/agentcollab-real-demo.mp4)
 
 Silent technical first cut with Chinese UI: real automated task submissions, OpenCode/Hermes replies and a context-aware follow-up in an isolated single-machine environment. Sampled playback timing is adjusted, not a latency benchmark. Confirmation tasks use no tools or files; execution receipts remain collapsed. This is not cross-machine, full-skill or installer acceptance. [Demo notes](docs/product/videos/README.md)
-
-[简体中文](README.md) · [Quick start](docs/QUICKSTART.en.md) · [User guide](docs/USER_GUIDE.en.md) · [Contributing](CONTRIBUTING.md)
-
-A self-hosted workspace where people collaborate with the native AI agents on their own computers.
-
-Instead of sharing one model account, each member connects their own installed tools. Conversations, project plans, reference files and reviewed deliverables live on the team Server. Agent execution takes place on the member's computer.
-
-**Release status:** preparing a community preview. Automated checks are passing, but platform installation and full native-Agent acceptance are still in progress. Do not interpret a build target as a verified operating system.
 
 ## How it works
 
